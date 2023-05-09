@@ -42,20 +42,62 @@ public class JavaBossBot extends TelegramLongPollingBot {
 	}
 
 	@Override
-	public void onUpdateReceived(Update update) {
-		if (update.hasMessage() && update.getMessage().hasText()) {
-			
-			long chatId = update.getMessage().getChatId();
-			
-			SendMessage message = new SendMessage();
-			message.setChatId(chatId);
-			message.setText("ciao scemo");
-			
-			try {
-				execute(message);
-			} catch (TelegramApiException e) {
-				LOG.error(e.getMessage());
-			}
-		}
-	}
+	@Override
+    public void onUpdateReceived(Update update) {
+        Message message = update.getMessage();
+        if (message != null && message.hasText()) {
+            String text = message.getText();
+            if ("/start".equals(text)) {
+                sendMessage(message.getChatId(), "Benvenuto nel bar! Cosa vuoi ordinare?",
+                        createOrderKeyboard());
+            }
+        }
+
+        CallbackQuery callbackQuery = update.getCallbackQuery();
+        if (callbackQuery != null) {
+            String data = callbackQuery.getData();
+            if ("bevande".equals(data)) {
+                sendMessage(callbackQuery.getMessage().getChatId(),
+                        "Hai scelto le bevande! Cosa vuoi bere?", null);
+            } else if ("panini".equals(data)) {
+                sendMessage(callbackQuery.getMessage().getChatId(),
+                        "Hai scelto i panini! Cosa vuoi mangiare?", null);
+            }
+        }
+    }
+
+    private void sendMessage(Long chatId, String text, InlineKeyboardMarkup keyboardMarkup) {
+        SendMessage message = new SendMessage()
+                .setChatId(chatId)
+                .setText(text)
+                .setReplyMarkup(keyboardMarkup);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private InlineKeyboardMarkup createOrderKeyboard() {
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        InlineKeyboardButton bevandeButton = new InlineKeyboardButton()
+                .setText("Bevande")
+                .setCallbackData("bevande");
+
+        InlineKeyboardButton paniniButton = new InlineKeyboardButton()
+                .setText("Panini")
+                .setCallbackData("panini");
+
+        List<InlineKeyboardButton> firstRow = new ArrayList<>();
+        firstRow.add(bevandeButton);
+        firstRow.add(paniniButton);
+
+        keyboard.add(firstRow);
+        keyboardMarkup.setKeyboard(keyboard);
+
+        return keyboardMarkup;
+    }
+
 }
