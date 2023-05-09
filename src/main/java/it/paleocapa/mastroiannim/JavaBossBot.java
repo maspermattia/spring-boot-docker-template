@@ -49,7 +49,7 @@ public class JavaBossBot extends TelegramLongPollingBot {
 			
 			SendMessage message = new SendMessage();
 			message.setChatId(chatId);
-			message.setText("Benvenuto! Come posso aiutarti?");
+			message.setText("ciao scemo");
 			
 			try {
 				execute(message);
