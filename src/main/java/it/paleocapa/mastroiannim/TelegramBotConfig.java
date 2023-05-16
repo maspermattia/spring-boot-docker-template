@@ -16,10 +16,10 @@ public class TelegramBotConfig {
     private static final Logger LOG = LoggerFactory.getLogger(TelegramBotConfig.class);
 
 
-    @Value("${listaBarMM_bot}")
+    @Value("${telegram.username}")
     private String botUsername;
 
-    @Value("${6062709765:AAF9GB4ByA82rw7E6wl2nCJezZjYvnRFqyg}")
+    @Value("${telegram.token}")
     private String botToken;
 
     @Bean
